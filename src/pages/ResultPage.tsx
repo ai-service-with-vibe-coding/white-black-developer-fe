@@ -154,7 +154,7 @@ export default function ResultPage({ analysisResult, personaReview, onRestart }:
               <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
                 {!isGenerating && (
                   <button className={styles.closeBtn} onClick={() => setIsShareModalOpen(false)}>
-                    <X size={24} />
+                    <X size={20} /> 닫기
                   </button>
                 )}
 
