@@ -171,5 +171,5 @@ npm run dev
 
 개발 과정에서의 기술적 고민과 트러블 슈팅 내역은 `docs` 폴더에 정리되어 있습니다.
 
-- [🐛 **트러블슈팅 로그 보러가기**](.src/docs/TROUBLESHOOTING.md)
-- [✅ **배포 체크리스트**](.src/docs/CHECKLIST.md)
+- [🐛 **트러블슈팅 로그 보러가기**](./src/docs/TROUBLESHOOTING.md)
+- [✅ **배포 체크리스트**](./src/docs/CHECKLIST.md)
