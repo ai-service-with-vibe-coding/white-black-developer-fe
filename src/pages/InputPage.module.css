@@ -22,23 +22,7 @@
     color: #eab308;
 }
 
-.langContainer {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-    max-width: 800px;
-}
 
-.langBtn {
-    padding: 6px 12px;
-    border-radius: 4px;
-    font-size: 12px;
-    cursor: pointer;
-    border: 1px solid #333;
-    transition: all 0.2s;
-}
 
 .codeWindow {
     width: 100%;
@@ -59,9 +43,45 @@
     padding: 10px 16px;
     background-color: #252526;
     display: flex;
-    gap: 8px;
+    justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #333;
+}
+
+.MacButtons {
+    display: flex;
+    gap: 8px;
+}
+
+.selectorContainer {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.langSelect {
+    background-color: transparent;
+    color: #eab308;
+    border: none;
+    font-family: monospace;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+.langSelect:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.langSelect:focus {
+    outline: none;
+}
+
+.langNameDisplay {
+    font-size: 12px;
+    color: #555;
+    font-family: monospace;
 }
 
 .dot {
@@ -71,25 +91,30 @@
 }
 
 .filename {
-    margin-left: 12px;
     font-size: 12px;
     color: #888;
     font-family: monospace;
 }
 
-.textArea {
-    width: 100%;
+.editorContainer {
     flex: 1;
-    height: 100%;
+    overflow-y: auto;
     background-color: #1e1e1e;
+}
+
+.textArea {
+    min-height: 100%;
     color: #d4d4d4;
-    border: none;
-    padding: 16px;
     font-family: monospace;
     font-size: 14px;
-    resize: none;
-    outline: none;
     line-height: 1.5;
+    outline: none;
+}
+
+/* Override Prism dark theme background to match our app */
+:global(pre[class*="language-"]),
+:global(code[class*="language-"]) {
+    text-shadow: none !important;
 }
 
 .footer {
