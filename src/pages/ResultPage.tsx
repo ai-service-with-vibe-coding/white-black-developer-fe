@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ShieldCheck, Gauge, CheckCircle2, Zap, FileCode, MessageSquare, Lightbulb, RefreshCcw } from 'lucide-react';
+import { ShieldCheck, Gauge, CheckCircle2, Zap, FileCode, MessageSquare, Lightbulb, RefreshCcw, Share2 } from 'lucide-react';
 import styles from '../App.module.css';
 import { APIAnalysisResult } from '../types/types';
 
@@ -68,6 +68,13 @@ export default function ResultPage({ analysisResult, personaReview, onRestart }:
               ))}
             </ul>
           </div>
+
+          <button onClick={() => {
+            navigator.clipboard.writeText(window.location.href);
+            alert("링크가 복사되었습니다!");
+          }} className={styles.shareBtn}>
+            <Share2 size={20} /> 결과 공유하기
+          </button>
 
           <button onClick={onRestart} className={styles.restartBtn}>
             <RefreshCcw size={20} /> 다시 주방으로 돌아가기
