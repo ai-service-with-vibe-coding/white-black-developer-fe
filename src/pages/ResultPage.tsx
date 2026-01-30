@@ -114,11 +114,11 @@ export default function ResultPage({ analysisResult, personaReview, onRestart }:
           {/* 1. 스테이터스 바 */}
           <div className={styles.resultBox}>
             <h3 className={styles.boxHeader}><Gauge size={20} /> 분석 지표</h3>
-            <StatusRow label="보안" value={analysisResult.scores.security} icon={<ShieldCheck color="#ef4444" />} />
-            <StatusRow label="품질" value={analysisResult.scores.quality} icon={<Gauge color="#3b82f6" />} />
-            <StatusRow label="모범 사례" value={analysisResult.scores.best_practices} icon={<CheckCircle2 color="#10b981" />} />
-            <StatusRow label="복잡도" value={analysisResult.scores.complexity} icon={<Zap color="#f59e0b" />} />
-            <StatusRow label="문서화" value={analysisResult.scores.documentation} icon={<FileCode color="#8b5cf6" />} />
+            <StatusRow label="보안" value={analysisResult.scores.security} icon={<ShieldCheck color="#ef4444" />} color="#ef4444" />
+            <StatusRow label="품질" value={analysisResult.scores.quality} icon={<Gauge color="#3b82f6" />} color="#3b82f6" />
+            <StatusRow label="모범 사례" value={analysisResult.scores.best_practices} icon={<CheckCircle2 color="#10b981" />} color="#10b981" />
+            <StatusRow label="복잡도" value={analysisResult.scores.complexity} icon={<Zap color="#f59e0b" />} color="#f59e0b" />
+            <StatusRow label="문서화" value={analysisResult.scores.documentation} icon={<FileCode color="#8b5cf6" />} color="#8b5cf6" />
           </div>
 
           {/* 2. 페르소나 리뷰 (텍스트 짤림 방지) */}
@@ -280,7 +280,7 @@ export default function ResultPage({ analysisResult, personaReview, onRestart }:
   );
 }
 
-function StatusRow({ label, value, icon }: { label: string, value: number, icon: React.ReactNode }) {
+function StatusRow({ label, value, icon, color }: { label: string, value: number, icon: React.ReactNode, color: string }) {
   return (
     <div className={styles.statusRow}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
@@ -288,7 +288,7 @@ function StatusRow({ label, value, icon }: { label: string, value: number, icon:
         <div style={{ fontWeight: 'bold' }}>{value.toFixed(1)}%</div>
       </div>
       <div className={styles.barBg}>
-        <motion.div initial={{ width: 0 }} animate={{ width: `${value}%` }} transition={{ delay: 2, duration: 1.5 }} style={{ height: '100%', background: 'linear-gradient(90deg, #333, #fff)' }} />
+        <motion.div initial={{ width: 0 }} animate={{ width: `${value}%` }} transition={{ delay: 2, duration: 1.5 }} style={{ height: '100%', background: color, boxShadow: `0 0 10px ${color}` }} />
       </div>
     </div>
   );
