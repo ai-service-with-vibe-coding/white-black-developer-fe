@@ -42,3 +42,4 @@ interface APIAnalysisResult {
   vulnerability_score: number;
   issues: any[];
 }
+
