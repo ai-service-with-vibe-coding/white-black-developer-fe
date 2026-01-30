@@ -1,0 +1,288 @@
+.container {
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
+    color: white;
+    overflow: hidden;
+    font-family: sans-serif;
+    position: relative;
+}
+
+/* Landing */
+.landing {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.bgContainer {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+.bgImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.8;
+}
+
+.bgGradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+}
+
+.landingContent {
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+    margin-top: 30vh;
+}
+
+.headerRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.headerText {
+    color: #9ca3af;
+    letter-spacing: 0.4em;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.title {
+    font-size: 5rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+}
+
+.subtitle {
+    font-size: 1.8rem;
+    color: #d1d5db;
+    font-style: italic;
+    margin-bottom: 3rem;
+}
+
+.startBtn {
+    padding: 1.2rem 4.5rem;
+    background-color: #b91c1c;
+    color: white;
+    font-size: 1.6rem;
+    font-weight: bold;
+    border-radius: 0.5rem;
+    border: 2px solid #ef4444;
+    cursor: pointer;
+    box-shadow: 0 0 30px rgba(185, 28, 28, 0.5);
+}
+
+/* Selection */
+.selection {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.selectionTitle {
+    font-size: 2.5rem;
+    margin-bottom: 4rem;
+}
+
+.underline {
+    border-bottom: 3px solid white;
+    padding-bottom: 5px;
+}
+
+.roleContainer {
+    display: flex;
+    gap: 3rem;
+}
+
+.roleBtn {
+    width: 18rem;
+    height: 22rem;
+    border-radius: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+.feBtn {
+    background-color: white;
+    color: black;
+}
+
+.beBtn {
+    background-color: #111;
+    color: white;
+    border: 2px solid #333;
+}
+
+.roleLabel {
+    font-size: 2.2rem;
+    font-weight: 900;
+    margin-top: 20px;
+}
+
+/* Loading */
+.loadingContainer {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background-color: black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.loadingCircleWrapper {
+    position: relative;
+    margin-bottom: 40px;
+}
+
+.loadingSpinner {
+    position: absolute;
+    inset: -15px;
+    border-radius: 50%;
+    border: 4px solid transparent;
+    border-top-color: #b91c1c;
+    border-bottom-color: #b91c1c;
+}
+
+.loadingImage {
+    width: 380px;
+    height: 380px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid #b91c1c;
+    box-shadow: 0 0 50px rgba(185, 28, 28, 0.4);
+    position: relative;
+}
+
+.loadingText {
+    font-size: 2.2rem;
+    font-style: italic;
+    margin-bottom: 15px;
+}
+
+.loadingSubText {
+    color: #666;
+    font-size: 1.2rem;
+}
+
+/* Result */
+.resultContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    position: relative;
+    overflow-y: auto;
+}
+
+.resultBg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+}
+
+.resultContent {
+    z-index: 10;
+    display: flex;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    align-items: flex-start;
+    padding: 5vh 5%;
+    gap: 5%;
+}
+
+.resultLeft {
+    flex: 1;
+    text-align: center;
+    position: sticky;
+    top: 5vh;
+}
+
+.resultRight {
+    flex: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    padding-bottom: 10vh;
+}
+
+.tierImageWrapper {
+    width: 100%;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+.resultBox {
+    background-color: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(20px);
+    border-radius: 30px;
+    padding: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.boxHeader {
+    color: #aaa;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.reviews {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: #eee;
+    white-space: pre-wrap;
+    word-break: keep-all;
+}
+
+.statusRow {
+    margin-bottom: 25px;
+}
+
+.barBg {
+    width: 100%;
+    height: 8px;
+    background-color: #111;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.restartBtn {
+    padding: 20px;
+    border-radius: 15px;
+    background-color: #b91c1c;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 1.2rem;
+}

@@ -1,0 +1,110 @@
+.container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.title {
+    font-size: 2rem;
+    font-family: serif;
+    margin-bottom: 1.5rem;
+    color: white;
+    text-align: center;
+}
+
+.highlight {
+    color: #eab308;
+}
+
+.langContainer {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 800px;
+}
+
+.langBtn {
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    border: 1px solid #333;
+    transition: all 0.2s;
+}
+
+.codeWindow {
+    width: 100%;
+    max-width: 800px;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    border: 1px solid #333;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+.windowHeader {
+    padding: 10px 16px;
+    background-color: #252526;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    border-bottom: 1px solid #333;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.filename {
+    margin-left: 12px;
+    font-size: 12px;
+    color: #888;
+    font-family: monospace;
+}
+
+.textArea {
+    width: 100%;
+    height: 400px;
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    border: none;
+    padding: 16px;
+    font-family: monospace;
+    font-size: 14px;
+    resize: none;
+    outline: none;
+    line-height: 1.5;
+}
+
+.footer {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.backBtn {
+    padding: 0.8rem 2rem;
+    color: #9ca3af;
+    background: none;
+    border: 1px solid #374151;
+    border-radius: 9999px;
+    cursor: pointer;
+}
+
+.submitBtn {
+    padding: 0.8rem 3rem;
+    background-color: #b91c1c;
+    color: white;
+    font-weight: bold;
+    border-radius: 9999px;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.5);
+}
