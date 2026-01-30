@@ -195,6 +195,8 @@
     display: flex;
     position: relative;
     overflow-y: auto;
+    background-color: black;
+    /* Solid background to cover hidden capture layer */
 }
 
 .resultBg {
@@ -303,4 +305,350 @@
     font-size: 1.2rem;
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
     margin-bottom: 20px;
+}
+
+/* Modal */
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modalContent {
+    background-color: #1a1a1a;
+    width: 95%;
+    max-width: 900px;
+    padding: 2.5rem;
+    border-radius: 24px;
+    border: 1px solid #333;
+    position: relative;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.closeBtn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.closeBtn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.modalTitle {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: white;
+    font-weight: bold;
+}
+
+.modalSubtitle {
+    color: #9ca3af;
+    margin-bottom: 2.5rem;
+    font-size: 1.1rem;
+}
+
+.previewContainer {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+}
+
+.previewItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.previewImageWrapper {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #333;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.previewImage {
+    display: block;
+    max-height: 400px;
+    object-fit: contain;
+}
+
+.downloadBtn {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+    width: 100%;
+    justify-content: center;
+}
+
+.downloadBtn:hover {
+    background-color: #1d4ed8;
+}
+
+.loadingOverlay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    gap: 1rem;
+    color: #ccc;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #333;
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Capture Styles - Always render but hidden from view/layout */
+.captureContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -50;
+    /* Positioned behind content, but on-screen for html2canvas */
+    visibility: visible;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: #000;
+    /* Default bg if image fails */
+}
+
+/* Reset styles for capture content */
+.captureBg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.captureOverlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+}
+
+.captureContent {
+    z-index: 10;
+    position: relative;
+    /* Necessary for z-index to work */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    height: 100%;
+    color: white;
+    padding: 60px;
+    box-sizing: border-box;
+}
+
+/* Header Section (Tier, Verdict, Score) */
+.captureHeader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 40px;
+    width: 100%;
+}
+
+.captureFeed .captureHeader {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 30px;
+}
+
+.captureTierImg {
+    width: 250px;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 6px solid white;
+    box-shadow: 0 0 60px rgba(255, 255, 255, 0.3);
+}
+
+.captureFeed .captureTierImg {
+    width: 200px;
+    height: 200px;
+}
+
+.captureTitleGroup {
+    text-align: center;
+}
+
+.captureFeed .captureTitleGroup {
+    text-align: left;
+}
+
+.captureLevel {
+    font-size: 2.5rem;
+    margin: 10px 0 0;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 300;
+    color: #ccc;
+}
+
+.captureVerdict {
+    font-size: 6rem;
+    font-weight: 900;
+    margin: 10px 0;
+    line-height: 1;
+}
+
+.captureScoreBox {
+    font-size: 4.5rem;
+    font-weight: 800;
+}
+
+/* Details Section */
+.captureDetails {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    flex: 1;
+    /* Fill remaining space */
+}
+
+/* Feed Layout: 2 Columns for details */
+.captureFeed .captureDetails {
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.captureColumn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Styled Boxes for Capture */
+.captureBox {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.captureBoxTitle {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #eee;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 10px;
+}
+
+/* Score Rows in Capture */
+.captureStatusRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+}
+
+.captureStatusBar {
+    flex: 1;
+    height: 12px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 6px;
+    margin-left: 20px;
+    overflow: hidden;
+}
+
+.captureStatusBarFill {
+    height: 100%;
+    background: white;
+}
+
+/* Reviews & Suggestions text */
+.captureText {
+    font-size: 1.3rem;
+    line-height: 1.6;
+    color: #ddd;
+    white-space: pre-wrap;
+    text-align: left;
+}
+
+.captureList {
+    padding-left: 25px;
+    text-align: left;
+    font-size: 1.3rem;
+    line-height: 1.5;
+    color: #ddd;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.captureFooter {
+    margin-top: auto;
+    opacity: 0.8;
+    font-size: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    font-weight: 500;
+    padding-top: 20px;
+}
+
+.captureBrand {
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    color: #ef4444;
+    font-size: 2rem;
 }
