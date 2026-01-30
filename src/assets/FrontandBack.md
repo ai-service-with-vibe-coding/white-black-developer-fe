@@ -1,25 +1,318 @@
-# 흑백개발자: 프론트엔드와 백엔드 연동의 이유
+# 프론트엔드-백엔드 연동 가이드
 
-## 1. 🍽️ 레스토랑의 역할 분담 (비유)
-- **프론트엔드 (홀 서빙/키오스크):** 손님(User)에게 메뉴판을 보여주고, 주문(코드)을 받아서 주방으로 전달합니다. 손님은 주방 안에서 무슨 일이 일어나는지 모릅니다.
-- **백엔드 (주방/셰프):** 주문 들어온 재료(코드)를 가지고 실제로 요리하고 맛을 봅니다(AI 심사).
-- **API (주문서):** 홀과 주방 사이의 약속입니다. "이런 형식으로 주문을 주면, 이런 요리를 내줄게"라는 규칙입니다.
+## 기존 방식
+MOCK_RESULT를 사용해서 프론트엔드에서 백엔드 없이 테스트
 
-## 2. 🛠️ 기술적인 이유
-### A. 보안 (Security)
-- **문제점:** 프론트엔드에 심사 로직(예: `if (code === 'hello') score = 100`)을 넣으면, 사용자가 브라우저 개발자 도구(F12)를 열어 정답을 훔쳐보거나 점수를 조작할 수 있습니다.
-- **해결책:** 심사 기준과 AI 키(OpenAI Key 등)는 서버(백엔드)에 숨겨두고, 결과만 프론트엔드로 보내줍니다.
+## 변경 방식
+- 백엔드 API 엔드 포인트 사용
+```
+POST /api/v1/analysis/analyze/stream
+Content-Type: application/json
+```
 
-### B. 무거운 처리 (Heavy Computation)
-- **문제점:** 사용자의 코드를 분석하고 AI에게 물어보는 작업은 컴퓨터 성능을 많이 사용하거나 시간이 걸립니다. 이를 사용자 브라우저에서 처리하면 렉이 걸릴 수 있습니다.
-- **해결책:** 성능 좋은 서버 컴퓨터에서 처리하고, 브라우저는 "로딩 중..." 화면만 보여주면 됩니다.
+## 요청 형식
 
-### C. 데이터 저장 (Database)
-- 누가 어떤 코드를 제출했고, 몇 점을 받았는지 기록하려면 데이터베이스(DB)가 필요합니다. 브라우저는 새로고침하면 데이터가 날아가지만, 백엔드는 DB에 영구 저장할 수 있습니다.
+```json
+{
+  "code": "def hello():\n    print('Hello, World!')",
+  "language": "auto",
+  "include_persona_review": true
+}
 
-## 3. 🔄 데이터 흐름 (Flow)
-1. **[Front]** 사용자가 코드 입력 후 '제출' 버튼 클릭
-2. **[Front]** `Loading` 화면 보여줌 & 백엔드로 코드 전송 (API 요청)
-3. **[Back]** 코드를 받아서 AI에게 평가 요청 및 점수 산출
-4. **[Back]** 결과를 프론트엔드에 응답 (JSON 형식)
-5. **[Front]** 응답받은 점수에 맞춰 결과 화면(`Level 1~5`) 출력
+## SSE 이벤트 타입
+
+| 이벤트 | 설명 | 데이터 |
+|--------|------|--------|
+| `analysis` | 코드 분석 결과 (즉시) | 점수, 리뷰, 이슈 등 |
+| `persona_token` | 페르소나 리뷰 토큰 | `{"token": "코드"}` |
+| `persona_done` | 페르소나 리뷰 완료 | `{"full_review": "전체 리뷰"}` |
+| `error` | 에러 발생 | `{"error": "에러 메시지"}` |
+| `done` | 모든 처리 완료 | `{"status": "completed"}` |
+
+## 타임라인
+
+```
+[요청] ──→ [analysis 이벤트] ──→ [persona_token] ──→ [persona_token] ──→ ... ──→ [persona_done] ──→ [done]
+           (즉시, ~2초)         (실시간 스트리밍, 토큰 단위)                    (완료)
+```
+
+## 프론트엔드 구현 예시
+
+### JavaScript (Vanilla)
+
+```javascript
+async function analyzeCodeStream(code, onAnalysis, onToken, onComplete) {
+  const response = await fetch('/api/v1/analysis/analyze/stream', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      code: code,
+      language: 'auto',
+      include_persona_review: true,
+    }),
+  });
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop(); // 마지막 불완전한 라인 보관
+
+    for (const line of lines) {
+      if (line.startsWith('event: ')) {
+        const eventType = line.slice(7);
+        continue;
+      }
+      if (line.startsWith('data: ')) {
+        const data = JSON.parse(line.slice(6));
+
+        // 이벤트 타입에 따라 처리
+        if (data.level !== undefined) {
+          // analysis 이벤트
+          onAnalysis(data);
+        } else if (data.token !== undefined) {
+          // persona_token 이벤트
+          onToken(data.token);
+        } else if (data.full_review !== undefined) {
+          // persona_done 이벤트
+          console.log('Persona review completed');
+        } else if (data.status === 'completed') {
+          // done 이벤트
+          onComplete();
+        } else if (data.error) {
+          // error 이벤트
+          console.error('Error:', data.error);
+        }
+      }
+    }
+  }
+}
+
+// 사용 예시
+const code = `def hello():
+    print("Hello, World!")`;
+
+let personaReview = '';
+
+analyzeCodeStream(
+  code,
+  // 분석 결과 수신 (즉시)
+  (analysis) => {
+    console.log('분석 완료!', analysis);
+    document.getElementById('score').textContent = `점수: ${analysis.overall_score}`;
+    document.getElementById('level').textContent = `레벨: ${analysis.level}`;
+    document.getElementById('code-review').textContent = analysis.code_review;
+  },
+  // 페르소나 토큰 수신 (실시간)
+  (token) => {
+    personaReview += token;
+    document.getElementById('persona-review').textContent = personaReview;
+  },
+  // 완료
+  () => {
+    console.log('모든 처리 완료!');
+  }
+);
+```
+
+### React
+
+```jsx
+import { useState, useCallback } from 'react';
+
+function useStreamAnalysis() {
+  const [analysis, setAnalysis] = useState(null);
+  const [personaReview, setPersonaReview] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
+
+  const analyze = useCallback(async (code) => {
+    setIsLoading(true);
+    setPersonaReview('');
+    setAnalysis(null);
+
+    try {
+      const response = await fetch('/api/v1/analysis/analyze/stream', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code,
+          language: 'auto',
+          include_persona_review: true,
+        }),
+      });
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop();
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = JSON.parse(line.slice(6));
+
+            if (data.level !== undefined) {
+              // 분석 결과
+              setAnalysis(data);
+              setIsLoading(false);
+              setIsStreaming(true);
+            } else if (data.token !== undefined) {
+              // 페르소나 토큰
+              setPersonaReview((prev) => prev + data.token);
+            } else if (data.status === 'completed') {
+              // 완료
+              setIsStreaming(false);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Analysis failed:', error);
+      setIsLoading(false);
+      setIsStreaming(false);
+    }
+  }, []);
+
+  return { analysis, personaReview, isLoading, isStreaming, analyze };
+}
+
+// 컴포넌트에서 사용
+function CodeAnalyzer() {
+  const { analysis, personaReview, isLoading, isStreaming, analyze } = useStreamAnalysis();
+  const [code, setCode] = useState('');
+
+  return (
+    <div>
+      <textarea
+        value={code}
+        onChange={(e) => setCode(e.target.value)}
+        placeholder="코드를 입력하세요"
+      />
+      <button onClick={() => analyze(code)} disabled={isLoading}>
+        {isLoading ? '분석 중...' : '분석하기'}
+      </button>
+
+      {analysis && (
+        <div>
+          <h2>분석 결과</h2>
+          <p>레벨: {analysis.level} ({analysis.level_title})</p>
+          <p>점수: {analysis.overall_score}</p>
+          <p>코드 리뷰: {analysis.code_review}</p>
+        </div>
+      )}
+
+      {(isStreaming || personaReview) && (
+        <div>
+          <h2>쉐프의 심사평 {isStreaming && '✍️'}</h2>
+          <p style={{ whiteSpace: 'pre-wrap' }}>{personaReview}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default CodeAnalyzer;
+```
+
+### Vue 3
+
+```vue
+<template>
+  <div>
+    <textarea v-model="code" placeholder="코드를 입력하세요"></textarea>
+    <button @click="analyze" :disabled="isLoading">
+      {{ isLoading ? '분석 중...' : '분석하기' }}
+    </button>
+
+    <div v-if="analysis">
+      <h2>분석 결과</h2>
+      <p>레벨: {{ analysis.level }} ({{ analysis.level_title }})</p>
+      <p>점수: {{ analysis.overall_score }}</p>
+      <p>코드 리뷰: {{ analysis.code_review }}</p>
+    </div>
+
+    <div v-if="isStreaming || personaReview">
+      <h2>쉐프의 심사평 <span v-if="isStreaming">✍️</span></h2>
+      <p style="white-space: pre-wrap">{{ personaReview }}</p>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+
+const code = ref('');
+const analysis = ref(null);
+const personaReview = ref('');
+const isLoading = ref(false);
+const isStreaming = ref(false);
+
+async function analyze() {
+  isLoading.value = true;
+  personaReview.value = '';
+  analysis.value = null;
+
+  try {
+    const response = await fetch('/api/v1/analysis/analyze/stream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        code: code.value,
+        language: 'auto',
+        include_persona_review: true,
+      }),
+    });
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop();
+
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const data = JSON.parse(line.slice(6));
+
+          if (data.level !== undefined) {
+            analysis.value = data;
+            isLoading.value = false;
+            isStreaming.value = true;
+          } else if (data.token !== undefined) {
+            personaReview.value += data.token;
+          } else if (data.status === 'completed') {
+            isStreaming.value = false;
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Analysis failed:', error);
+    isLoading.value = false;
+    isStreaming.value = false;
+  }
+}
+</script>
+```
+
+---
